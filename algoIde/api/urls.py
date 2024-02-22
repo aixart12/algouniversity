@@ -1,6 +1,8 @@
 from django.urls import path
-from .views import hello_world
+from . import views 
 
 urlpatterns = [
-    path('api/', hello_world),
+    path('api/', views.hello_world),
+    path('execute', views.execute_code, name='execute_code'),
+    path('history', views.get_history, name='get_history'),
 ]

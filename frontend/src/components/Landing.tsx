@@ -81,21 +81,18 @@ const Landing: FC = () => {
   const handleCompile = () => {
     setProcessing(true);
     const formData = {
-      language_id: 63,
       // encode source code in base64
-      source_code: btoa(code),
-      stdin: btoa(customInput),
+      code: btoa(code),
+     
     };
 
     const options = {
       method: "POST",
-      url: process.env.REACT_APP_RAPID_API_URL as string,
+      url: 'http://localhost:8000/execute',
       params: { base64_encoded: "true", fields: "*" },
       headers: {
         "content-type": "application/json",
         "Content-Type": "application/json",
-        "X-RapidAPI-Host": process.env.REACT_APP_RAPID_API_HOST as string,
-        "X-RapidAPI-Key": process.env.REACT_APP_RAPID_API_KEY as string,
       },
       data: formData,
     };
