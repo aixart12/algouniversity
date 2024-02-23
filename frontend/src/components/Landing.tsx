@@ -9,6 +9,7 @@ import OutputWindow from "./OutputWindow";
 import CustomInput from "./CustomInput";
 import OutputDetails from "./OutputDetails";
 import Table from "./Table";
+import { executeCode, getHistory } from "../apis";
 
 interface RapidAPIResponse {
   token: string;
@@ -168,45 +169,52 @@ const Landing: FC = () => {
 
   const handleCompile = () => {
     setProcessing(true);
-    const formData = {
-      // encode source code in base64
-      code: btoa(code),
-    };
 
-    const options = {
-      method: "POST",
-      url: "http://localhost:8000/execute",
-      params: { base64_encoded: "true", fields: "*" },
-      headers: {
-        "content-type": "application/json",
-        "Content-Type": "application/json",
-      },
-      data: formData,
-    };
+    let test = executeCode(code);
 
-    axios
-      .request<RapidAPIResponse>(options)
-      .then(function (response: AxiosResponse<RapidAPIResponse>) {
-        console.log("res.data", response.data);
-        const token = response.data.token;
-        checkStatus(token);
-      })
-      .catch((err) => {
-        let error = err.response ? err.response.data : err;
-        // get error status
-        let status = error;
-        console.log("status", err);
-        if (status === 429) {
-          console.log("too many requests", status);
+    let history = getHistory();
 
-          showErrorToast(
-            `Quota of 100 requests exceeded for the Day! Please read the blog on freeCodeCamp to learn how to set up your own RAPID API Judge0!`,
-            10000
-          );
-        }
-        setProcessing(false);
-        console.log("catch block...", error);
-      });
+    console.log("print the code exection", history);
+    //  if()
+    //   const formData = {
+    //     // encode source code in base64
+    //     code: btoa(code),
+    //   };
+
+    //   const options = {
+    //     method: "POST",
+    //     url: "http://localhost:8000/execute",
+    //     params: { base64_encoded: "true", fields: "*" },
+    //     headers: {
+    //       "content-type": "application/json",
+    //       "Content-Type": "application/json",
+    //     },
+    //     data: formData,
+    //   };
+
+    //   axios
+    //     .request<RapidAPIResponse>(options)
+    //     .then(function (response: AxiosResponse<RapidAPIResponse>) {
+    //       console.log("res.data", response.data);
+    //       const token = response.data.token;
+    //       checkStatus(token);
+    //     })
+    //     .catch((err) => {
+    //       let error = err.response ? err.response.data : err;
+    //       // get error status
+    //       let status = error;
+    //       console.log("status", err);
+    //       if (status === 429) {
+    //         console.log("too many requests", status);
+
+    //         showErrorToast(
+    //           `Quota of 100 requests exceeded for the Day! Please read the blog on freeCodeCamp to learn how to set up your own RAPID API Judge0!`,
+    //           10000
+    //         );
+    //       }
+    //       setProcessing(false);
+    //       console.log("catch block...", error);
+    //     });
   };
 
   const checkStatus = async (token: string) => {
