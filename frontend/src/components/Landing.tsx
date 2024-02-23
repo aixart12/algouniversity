@@ -9,7 +9,7 @@ import OutputWindow from "./OutputWindow";
 import CustomInput from "./CustomInput";
 import OutputDetails from "./OutputDetails";
 import Table from "./Table";
-import { executeCode, getHistory } from "../apis";
+import { executeCode, getHistory, getOneHistory } from "../apis";
 
 interface RapidAPIResponse {
   token: string;
@@ -18,134 +18,40 @@ interface RapidAPIResponse {
   };
 }
 
-const javascriptDefault = `/**
-* Problem: Binary Search: Search a sorted array for a target value.
-*/
-
-// Time: O(log n)
-const binarySearch = (arr, target) => {
- return binarySearchHelper(arr, target, 0, arr.length - 1);
-};
-
-const binarySearchHelper = (arr, target, start, end) => {
- if (start > end) {
-   return false;
- }
- let mid = Math.floor((start + end) / 2);
- if (arr[mid] === target) {
-   return mid;
- }
- if (arr[mid] < target) {
-   return binarySearchHelper(arr, target, mid + 1, end);
- }
- if (arr[mid] > target) {
-   return binarySearchHelper(arr, target, start, mid - 1);
- }
-};
-
-const arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-const target = 5;
-console.log(binarySearch(arr, target));
+let javascriptDefault = `
+function simple_return(a) {\n  return a};
 `;
 
 const Landing: FC = () => {
   const [code, setCode] = useState<string>(javascriptDefault);
-  const [customInput, setCustomInput] = useState<string>("");
+  const [history, setHistory] = useState<any[]>([]);
   const [outputDetails, setOutputDetails] = useState<any>(null);
   const [processing, setProcessing] = useState<boolean | null>(null);
   const [theme, setTheme] = useState<string>("cobalt");
-  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [selectedId, setSelectedId] = useState<number>(0);
 
   const enterPress = useKeyPress("Enter");
   const ctrlPress = useKeyPress("Control");
   const handleRowClick = (id: number) => setSelectedId(id);
 
-  const rows = [
-    {
-      id: 1,
-      code: "ABC",
-      test_cases_passed: 5,
-      test_cases_failed: 2,
-      created_at: "2024-02-23",
-    },
-    {
-      id: 2,
-      code: "DEF",
-      test_cases_passed: 8,
-      test_cases_failed: 1,
-      created_at: "2024-02-22",
-    },
-    {
-      id: 3,
-      code: "GHI",
-      test_cases_passed: 3,
-      test_cases_failed: 4,
-      created_at: "2024-02-21",
-    },
-    {
-      id: 1,
-      code: "ABC",
-      test_cases_passed: 5,
-      test_cases_failed: 2,
-      created_at: "2024-02-23",
-    },
-    {
-      id: 2,
-      code: "DEF",
-      test_cases_passed: 8,
-      test_cases_failed: 1,
-      created_at: "2024-02-22",
-    },
-    {
-      id: 3,
-      code: "GHI",
-      test_cases_passed: 3,
-      test_cases_failed: 4,
-      created_at: "2024-02-21",
-    },
-    {
-      id: 1,
-      code: "ABC",
-      test_cases_passed: 5,
-      test_cases_failed: 2,
-      created_at: "2024-02-23",
-    },
-    {
-      id: 2,
-      code: "DEF",
-      test_cases_passed: 8,
-      test_cases_failed: 1,
-      created_at: "2024-02-22",
-    },
-    {
-      id: 3,
-      code: "GHI",
-      test_cases_passed: 3,
-      test_cases_failed: 4,
-      created_at: "2024-02-21",
-    },
-    {
-      id: 1,
-      code: "ABC",
-      test_cases_passed: 5,
-      test_cases_failed: 2,
-      created_at: "2024-02-23",
-    },
-    {
-      id: 2,
-      code: "DEF",
-      test_cases_passed: 8,
-      test_cases_failed: 1,
-      created_at: "2024-02-22",
-    },
-    {
-      id: 3,
-      code: "GHI",
-      test_cases_passed: 3,
-      test_cases_failed: 4,
-      created_at: "2024-02-21",
-    },
-  ];
+  useEffect(() => {
+    if (selectedId > 0) {
+      const fetchData = async () => {
+        let oneData: any = await getOneHistory(selectedId);
+        setCode(() => oneData.code);
+        console.log("getting the oneData", code);
+      };
+      fetchData();
+    }
+  }, [selectedId]);
+
+  useEffect(() => {
+    const featchData = async () => {
+      let historyRes: any = await getHistory();
+      setHistory(() => historyRes as any[]);
+    };
+    featchData();
+  }, [processing]);
 
   useEffect(() => {
     if (enterPress && ctrlPress) {
@@ -167,89 +73,24 @@ const Landing: FC = () => {
     }
   };
 
-  const handleCompile = () => {
+  const handleCompile = async () => {
     setProcessing(true);
-
-    let test = executeCode(code);
-
-    let history = getHistory();
+    let test: any = await executeCode(code);
+    console.log("getting the result", test);
+    if (test) {
+      setProcessing(false);
+      setOutputDetails(test?.results);
+      showSuccessToast(`Compiled Successfully!`);
+      console.log("response.data", test?.results);
+      return;
+    } else {
+      setTimeout(() => {
+        setOutputDetails(false);
+        showErrorToast();
+      }, 100);
+    }
 
     console.log("print the code exection", history);
-    //  if()
-    //   const formData = {
-    //     // encode source code in base64
-    //     code: btoa(code),
-    //   };
-
-    //   const options = {
-    //     method: "POST",
-    //     url: "http://localhost:8000/execute",
-    //     params: { base64_encoded: "true", fields: "*" },
-    //     headers: {
-    //       "content-type": "application/json",
-    //       "Content-Type": "application/json",
-    //     },
-    //     data: formData,
-    //   };
-
-    //   axios
-    //     .request<RapidAPIResponse>(options)
-    //     .then(function (response: AxiosResponse<RapidAPIResponse>) {
-    //       console.log("res.data", response.data);
-    //       const token = response.data.token;
-    //       checkStatus(token);
-    //     })
-    //     .catch((err) => {
-    //       let error = err.response ? err.response.data : err;
-    //       // get error status
-    //       let status = error;
-    //       console.log("status", err);
-    //       if (status === 429) {
-    //         console.log("too many requests", status);
-
-    //         showErrorToast(
-    //           `Quota of 100 requests exceeded for the Day! Please read the blog on freeCodeCamp to learn how to set up your own RAPID API Judge0!`,
-    //           10000
-    //         );
-    //       }
-    //       setProcessing(false);
-    //       console.log("catch block...", error);
-    //     });
-  };
-
-  const checkStatus = async (token: string) => {
-    const options = {
-      method: "GET",
-      url: process.env.REACT_APP_RAPID_API_URL + "/" + token,
-      params: { base64_encoded: "true", fields: "*" },
-      headers: {
-        "X-RapidAPI-Host": process.env.REACT_APP_RAPID_API_HOST as string,
-        "X-RapidAPI-Key": process.env.REACT_APP_RAPID_API_KEY as string,
-      },
-    };
-    try {
-      let response = await axios.request(options);
-      let statusId = response.data.status?.id;
-
-      // Processed - we have a result
-      if (statusId === 1 || statusId === 2) {
-        // still processing
-        setTimeout(() => {
-          checkStatus(token);
-        }, 2000);
-        return;
-      } else {
-        setProcessing(false);
-        setOutputDetails(response.data);
-        showSuccessToast(`Compiled Successfully!`);
-        console.log("response.data", response.data);
-        return;
-      }
-    } catch (err) {
-      console.log("err", err);
-      setProcessing(false);
-      showErrorToast();
-    }
   };
 
   const showSuccessToast = (msg?: string) => {
@@ -304,10 +145,6 @@ const Landing: FC = () => {
         <div className="right-container flex flex-shrink-0 w-[30%] flex-col">
           <OutputWindow outputDetails={outputDetails} />
           <div className="flex flex-col items-end">
-            {/* <CustomInput
-              customInput={customInput}
-              setCustomInput={setCustomInput}
-            /> */}
             <button
               onClick={handleCompile}
               disabled={!code}
@@ -319,12 +156,8 @@ const Landing: FC = () => {
               {processing ? "Processing..." : "Compile and Execute"}
             </button>
           </div>
-          {/* {outputDetails && <OutputDetails outputDetails={outputDetails} />} */}
           <div className="flex flex-col mt-4 ">
-            <Table
-              rows={[...rows, ...rows, ...rows]}
-              onRowClick={handleRowClick}
-            />
+            <Table rows={history} onRowClick={handleRowClick} />
           </div>
         </div>
       </div>

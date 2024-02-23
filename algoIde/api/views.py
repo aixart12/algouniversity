@@ -71,34 +71,13 @@ def get_history(request):
     else:
         return JsonResponse({'error': 'Invalid request method'})
 
-
-    url = "https://judge0-ce.p.rapidapi.com/submissions"
-    querystring = {"base64_encoded":"true","fields":"*"}
-    
-    encoded_code = base64.b64encode(code.encode()).decode()
-    encoded_stdin = base64.b64encode(predefined_input.encode()).decode()
-    
-    payload = {
-        "language_id": 63,  # Language ID for JavaScript
-        "source_code": encoded_code,
-        "stdin":  encoded_stdin # Pass predefined input
-    }
-    headers = {
-        "content-type": "application/json",
-        "Content-Type": "application/json",
-        "X-RapidAPI-Key": "8c4a82e9a1mshfb1b12cb6a79f1ep1766cajsn9b37a152484b",
-        "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com"
-    }
-
-    response = requests.post(url, json=payload, headers=headers ,params=querystring)
-
-    # Extract the output from Judge0's response
-    # output = response.json().get('stdout', '')
-
-    print('output form the judge0' , type(response) ,  response.json())
-
-    # Compare Judge0's output with predefined output
-    if output.strip() == predefined_output.strip():
-        return "Passed"
+def get_history_by_id(request, id):
+    if request.method == 'GET':
+        try:
+            history = History.objects.get(id=id)
+            serializer = HistorySerializer(history)
+            return JsonResponse(serializer.data)
+        except History.DoesNotExist:
+            return JsonResponse({'error': 'History record not found'}, status=404)
     else:
-        return "Failed"
+        return JsonResponse({'error': 'Invalid request method'})

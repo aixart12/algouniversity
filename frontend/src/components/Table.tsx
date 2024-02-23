@@ -20,7 +20,7 @@ const Row: React.FC<RowProps> = ({ data, onClick }) => {
       className="hover:bg-gray-100 cursor-pointer text-center"
     >
       <td>{data.id}</td>
-      <td>{data.code}</td>
+      <td>{data.code.slice(0, 15)}...</td>
       <td>{data.test_cases_passed}</td>
       <td>{data.test_cases_failed}</td>
       <td>{data.created_at}</td>

@@ -2,7 +2,7 @@ import { Axios } from './axios';
 
 const EXECUTE_CODE_URL = 'execute'
 const HISTORY_URL = 'history'
-const ONE_HISTORY_URL = (id : string) => `history/${id}`
+const ONE_HISTORY_URL = (id : number) => `history/${id}`
 
 
 export const executeCode = (code : string) => {
@@ -15,6 +15,6 @@ export const getHistory = () =>{
     return Axios().get(HISTORY_URL);
 }
 
-export const constGetOneHistory = (id : string)  => {
+export const getOneHistory = (id : number)  => {
     return Axios().get(ONE_HISTORY_URL(id));
 }
