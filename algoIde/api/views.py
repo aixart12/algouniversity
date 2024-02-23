@@ -18,16 +18,15 @@ def hello_world(request):
 def execute_code(request):
     if request.method == 'POST':
         data = json.loads(request.body.decode('utf-8'))
-        print('data is data', data)
         javascript_code = data.get('code', '')
     
         # Define predefined test cases
         test_cases = [
-            {'input_data':  '1', 'expected_output': '1'},
+            {'input_data': '1', 'expected_output': '1'},
             {'input_data': '2', 'expected_output': '2'},
-            {'input_data': '3', 'expected_output': '5'},
-            {'input_data': '4', 'expected_output': '5'},
-            {'input_data': '5', 'expected_output': '2'},
+            {'input_data': '3', 'expected_output': '3'},
+            {'input_data': '4', 'expected_output': '4'},
+            {'input_data': '5', 'expected_output': '5'},
         ]
         
         passed = 0
