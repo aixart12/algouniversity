@@ -8,6 +8,7 @@ import useKeyPress from "../hooks/useKeyPress";
 import OutputWindow from "./OutputWindow";
 import CustomInput from "./CustomInput";
 import OutputDetails from "./OutputDetails";
+import Table from "./Table";
 
 interface RapidAPIResponse {
   token: string;
@@ -52,11 +53,98 @@ const Landing: FC = () => {
   const [outputDetails, setOutputDetails] = useState<any>(null);
   const [processing, setProcessing] = useState<boolean | null>(null);
   const [theme, setTheme] = useState<string>("cobalt");
+  const [selectedId, setSelectedId] = useState<number | null>(null);
 
   const enterPress = useKeyPress("Enter");
   const ctrlPress = useKeyPress("Control");
+  const handleRowClick = (id: number) => setSelectedId(id);
 
- 
+  const rows = [
+    {
+      id: 1,
+      code: "ABC",
+      test_cases_passed: 5,
+      test_cases_failed: 2,
+      created_at: "2024-02-23",
+    },
+    {
+      id: 2,
+      code: "DEF",
+      test_cases_passed: 8,
+      test_cases_failed: 1,
+      created_at: "2024-02-22",
+    },
+    {
+      id: 3,
+      code: "GHI",
+      test_cases_passed: 3,
+      test_cases_failed: 4,
+      created_at: "2024-02-21",
+    },
+    {
+      id: 1,
+      code: "ABC",
+      test_cases_passed: 5,
+      test_cases_failed: 2,
+      created_at: "2024-02-23",
+    },
+    {
+      id: 2,
+      code: "DEF",
+      test_cases_passed: 8,
+      test_cases_failed: 1,
+      created_at: "2024-02-22",
+    },
+    {
+      id: 3,
+      code: "GHI",
+      test_cases_passed: 3,
+      test_cases_failed: 4,
+      created_at: "2024-02-21",
+    },
+    {
+      id: 1,
+      code: "ABC",
+      test_cases_passed: 5,
+      test_cases_failed: 2,
+      created_at: "2024-02-23",
+    },
+    {
+      id: 2,
+      code: "DEF",
+      test_cases_passed: 8,
+      test_cases_failed: 1,
+      created_at: "2024-02-22",
+    },
+    {
+      id: 3,
+      code: "GHI",
+      test_cases_passed: 3,
+      test_cases_failed: 4,
+      created_at: "2024-02-21",
+    },
+    {
+      id: 1,
+      code: "ABC",
+      test_cases_passed: 5,
+      test_cases_failed: 2,
+      created_at: "2024-02-23",
+    },
+    {
+      id: 2,
+      code: "DEF",
+      test_cases_passed: 8,
+      test_cases_failed: 1,
+      created_at: "2024-02-22",
+    },
+    {
+      id: 3,
+      code: "GHI",
+      test_cases_passed: 3,
+      test_cases_failed: 4,
+      created_at: "2024-02-21",
+    },
+  ];
 
   useEffect(() => {
     if (enterPress && ctrlPress) {
@@ -83,12 +171,11 @@ const Landing: FC = () => {
     const formData = {
       // encode source code in base64
       code: btoa(code),
-     
     };
 
     const options = {
       method: "POST",
-      url: 'http://localhost:8000/execute',
+      url: "http://localhost:8000/execute",
       params: { base64_encoded: "true", fields: "*" },
       headers: {
         "content-type": "application/json",
@@ -195,14 +282,13 @@ const Landing: FC = () => {
         pauseOnHover
       />
 
-
       <div className="h-4 w-full bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500"></div>
       <div className="flex flex-row space-x-4 items-start px-4 py-4">
         <div className="flex flex-col w-full h-full justify-start items-end">
           <CodeEditorWindow
             code={code}
             onChange={onChange}
-            language={'javascript'}
+            language={"javascript"}
             theme={theme}
           />
         </div>
@@ -210,10 +296,10 @@ const Landing: FC = () => {
         <div className="right-container flex flex-shrink-0 w-[30%] flex-col">
           <OutputWindow outputDetails={outputDetails} />
           <div className="flex flex-col items-end">
-            <CustomInput
+            {/* <CustomInput
               customInput={customInput}
               setCustomInput={setCustomInput}
-            />
+            /> */}
             <button
               onClick={handleCompile}
               disabled={!code}
@@ -225,7 +311,13 @@ const Landing: FC = () => {
               {processing ? "Processing..." : "Compile and Execute"}
             </button>
           </div>
-          {outputDetails && <OutputDetails outputDetails={outputDetails} />}
+          {/* {outputDetails && <OutputDetails outputDetails={outputDetails} />} */}
+          <div className="flex flex-col mt-4 ">
+            <Table
+              rows={[...rows, ...rows, ...rows]}
+              onRowClick={handleRowClick}
+            />
+          </div>
         </div>
       </div>
     </>
